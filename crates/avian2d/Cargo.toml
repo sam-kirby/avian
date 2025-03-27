@@ -58,7 +58,7 @@ serialize = [
 bevy_diagnostic = []
 
 # Enables the `PhysicsDiagnosticsUiPlugin` for visualizing physics diagnostics data with a debug UI.
-diagnostic_ui = ["bevy_diagnostic", "bevy/bevy_ui"]
+diagnostic_ui = ["bevy_diagnostic", "bevy/bevy_animation", "bevy/bevy_ui"]
 
 [lib]
 name = "avian2d"

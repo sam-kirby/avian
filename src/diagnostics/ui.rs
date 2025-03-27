@@ -83,29 +83,26 @@ struct DiagnosticRow;
 
 /// A marker component for the name text node of a diagnostic.
 #[derive(Component)]
-#[require(TextFont(diagnostic_font))]
+#[require(TextFont = diagnostic_font())]
 struct PhysicsDiagnosticName;
 
 /// A component with the [`DiagnosticPath`] of a diagnostic.
 #[derive(Component)]
-#[require(TextFont(diagnostic_font))]
+#[require(TextFont = diagnostic_font())]
 struct PhysicsDiagnosticPath(&'static DiagnosticPath);
 
 /// A marker component for a counter diagnostic.
 #[derive(Component)]
-#[require(TextFont(diagnostic_font))]
+#[require(TextFont = diagnostic_font())]
 struct PhysicsDiagnosticCounter;
 
 /// A marker component for a timer diagnostic.
 #[derive(Component)]
-#[require(TextFont(diagnostic_font))]
+#[require(TextFont = diagnostic_font())]
 struct PhysicsDiagnosticTimer;
 
 fn diagnostic_font() -> TextFont {
-    TextFont {
-        font_size: 10.0,
-        ..default()
-    }
+    TextFont::from_font_size(10.0)
 }
 
 /// A component that configures how the text color should adapt
@@ -431,7 +428,7 @@ fn update_timers(
         // Linearly interpolating between green and red, with `lower_bound` and `upper_bound`.
         let t = (average as f32 - color_config.lower_bound)
             / (color_config.upper_bound - color_config.lower_bound);
-        text_color.0 = Animatable::interpolate(&green, &red, t.min(1.0)).into();
+        text_color.0 = LinearRgba::interpolate(&green, &red, t.min(1.0)).into();
 
         // Make sure the node is visible.
         node.display = Display::Flex;

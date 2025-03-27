@@ -47,7 +47,7 @@ struct JumpImpulse(Scalar);
 // Enable contact modification for one-way platforms with the `ActiveCollisionHooks` component.
 // Here we use required components, but you could also add it manually.
 #[derive(Clone, Eq, PartialEq, Debug, Default, Component)]
-#[require(ActiveCollisionHooks(|| ActiveCollisionHooks::MODIFY_CONTACTS))]
+#[require(ActiveCollisionHooks::MODIFY_CONTACTS)]
 pub struct OneWayPlatform(EntityHashSet);
 
 /// A component to control how an actor interacts with a one-way platform.
@@ -159,7 +159,7 @@ fn movement(
         // You should use raycasting, shapecasting or sensor colliders
         // for more robust ground detection.
         if linear_velocity.y.abs() < 0.1
-            && !keyboard_input.pressed(KeyCode::ArrowDown)
+            && !keyboard_input.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown])
             && keyboard_input.just_pressed(KeyCode::Space)
         {
             linear_velocity.y = jump_impulse.0;
@@ -168,17 +168,14 @@ fn movement(
 }
 
 fn pass_through_one_way_platform(
-    mut commands: Commands,
     keyboard_input: Res<ButtonInput<KeyCode>>,
-    mut actors: Query<(Entity, &mut PassThroughOneWayPlatform), With<Actor>>,
+    mut actors: Query<&mut PassThroughOneWayPlatform, With<Actor>>,
 ) {
-    for (entity, mut pass_through_one_way_platform) in &mut actors {
-        if keyboard_input.pressed(KeyCode::ArrowDown) && keyboard_input.pressed(KeyCode::Space) {
+    for mut pass_through_one_way_platform in &mut actors {
+        if keyboard_input.any_pressed([KeyCode::KeyS, KeyCode::ArrowDown])
+            && keyboard_input.pressed(KeyCode::Space)
+        {
             *pass_through_one_way_platform = PassThroughOneWayPlatform::Always;
-
-            // Wake up the body when it's allowed to drop down.
-            // Otherwise it won't fall because gravity isn't simulated.
-            commands.queue(WakeUpBody(entity));
         } else {
             *pass_through_one_way_platform = PassThroughOneWayPlatform::ByNormal;
         }
